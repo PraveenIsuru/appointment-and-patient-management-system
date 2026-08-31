@@ -1,0 +1,68 @@
+### Assessment documents ###
+# Kept local: the ICBT brief is copyrighted course material and the
+# report/UML working files are submitted via Turnitin, not the public repo.
+my-docs/
+
+### Maven ###
+target/
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+!.mvn/wrapper/maven-wrapper.properties
+
+### Gradle ###
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+
+### IntelliJ IDEA ###
+.idea/
+*.iml
+*.ipr
+*.iws
+out/
+
+### Eclipse / Spring Tool Suite ###
+.apt_generated/
+.classpath
+.factorypath
+.project
+.settings/
+.springBeans
+.sts4-cache/
+bin/
+
+### VS Code ###
+.vscode/
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+### Secrets and local overrides -- never commit credentials ###
+.env
+.env.local
+*-local.properties
+*-local.yml
+application-secret*.properties
+src/main/resources/application-local.*
+
+### Logs and runtime ###
+*.log
+logs/
+*.pid
+*.db
+*.mv.db
+*.trace.db
+
+### Test and coverage output ###
+*.exec
+coverage/
+jacoco.exec
+
+### OS noise ###
+.DS_Store
+Thumbs.db
+desktop.ini

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${clinicName}">Sunrise Dental Clinic</title>
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+</head>
+<body>
+<main class="shell">
+    <header class="hero">
+        <p class="eyebrow">CIS6003 &middot; Advanced Programming</p>
+        <h1 th:text="${clinicName}">Sunrise Dental Clinic</h1>
+        <p class="tagline" th:text="${tagline}">Appointment &amp; Patient Management System</p>
+    </header>
+
+    <section class="card">
+        <h2>Build status</h2>
+        <p class="ok">M0 complete &mdash; Spring Boot foundation is running.</p>
+        <p class="muted">
+            Roles to be implemented: <strong>Admin</strong>, <strong>Dentist</strong>,
+            <strong>Patient</strong>. Authentication arrives in M3.
+        </p>
+    </section>
+
+    <section class="card">
+        <h2>Developer links</h2>
+        <ul class="links">
+            <li><a th:href="@{/login}">Login</a> &mdash; default form login</li>
+            <li><a th:href="@{/h2-console}">H2 console</a> &mdash; development database</li>
+            <li><a th:href="@{/actuator/health}">Health check</a></li>
+        </ul>
+    </section>
+
+    <footer>
+        <p class="muted">Sunrise Dental Clinic, Colombo &middot; academic project</p>
+    </footer>
+</main>
+</body>
+</html>
