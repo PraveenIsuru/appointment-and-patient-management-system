@@ -8,23 +8,6 @@ Built for **CIS6003 Advanced Programming (WRIT1)**, ICBT Campus / Cardiff Metrop
 
 ---
 
-## Status
-
-| Milestone | Scope | State |
-|---|---|---|
-| **M0** | Foundation & repo setup | ✅ Complete |
-| M1 | UML diagrams & design decisions | ⬜ |
-| M2 | Domain model & database | ⬜ |
-| M3 | Security, roles & login | ⬜ |
-| M4 | Appointments: book, search, validate | ⬜ |
-| M5 | Billing & reports | ⬜ |
-| M6 | REST API & design patterns | ⬜ |
-| M7 | TDD & test automation | ⬜ |
-| M8 | CI/CD & deployment | ⬜ |
-| M9 | Report assembly | ⬜ |
-
----
-
 ## Technology stack
 
 | Layer | Technology |
@@ -35,8 +18,8 @@ Built for **CIS6003 Advanced Programming (WRIT1)**, ICBT Campus / Cardiff Metrop
 | Presentation | Spring MVC + Thymeleaf, plus a REST API from M6 |
 | Business logic | Spring `@Service` layer |
 | Persistence | Spring Data JPA / Hibernate |
-| Database | H2 in-memory for development; MySQL 8 from M2 |
-| Schema management | Flyway (enabled in M2) |
+| Database | MySQL 8 (authoritative); H2 in MySQL mode for development and tests |
+| Schema management | Flyway, with vendor-split migrations |
 | Security | Spring Security — BCrypt, role-based access |
 | Testing | JUnit 5, Mockito, MockMvc |
 
@@ -81,7 +64,8 @@ justified extension — see the Task A design decisions.
 
 - **JDK 21 or later.** `JAVA_HOME` must point at a real JDK, for example
   `C:\Program Files\Java\jdk-22`.
-- No database is required yet — M0 and M1 run on in-memory H2.
+- No database server is required to run or test the application: it defaults to in-memory H2
+  in MySQL compatibility mode. MySQL is needed only for the `mysql` profile.
 
 Verify the toolchain:
 
@@ -110,8 +94,56 @@ Then open <http://localhost:8080>.
 | `/h2-console` | Development database console |
 | `/actuator/health` | Health check |
 
-Until M3 lands, authentication uses Spring Security's default generated password, printed to the
-console at startup as `Using generated security password: …`.
+Until M3 wires the seeded users into Spring Security, authentication still uses the default
+generated password printed at startup as `Using generated security password: …`.
+
+---
+
+## Database
+
+Flyway owns the schema; nothing is created by hand and Hibernate runs with
+`ddl-auto=validate`, so a mapping that drifts from the migrations fails at startup rather than
+silently altering tables.
+
+Migrations are split by vendor. Portable table DDL and seed data live in `common` and run
+everywhere. Objects that cannot be written portably live under `{vendor}`:
+
+| Object | Purpose |
+|---|---|
+| `uq_dentist_slot` | Unique index that structurally prevents double booking |
+| `trg_appointment_audit_insert` / `_update` | Write every appointment change to `audit_log` |
+| `fn_calculate_bill_total` | One definition of the bill arithmetic, shared by SQL and Java |
+| `sp_daily_revenue_report` | Set-based daily revenue aggregation |
+
+The trigger pair and the stored procedure are MySQL-only. H2 has no procedural SQL, so the H2
+migration creates only the function and records the gap — a known limitation carried into the
+M7 test plan.
+
+### Running against MySQL
+
+```sql
+CREATE DATABASE sunrise_dental CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
+```
+
+```bash
+./mvnw spring-boot:run "-Dspring-boot.run.profiles=mysql"
+```
+
+Credentials come from `DB_USERNAME` / `DB_PASSWORD` and are never committed.
+
+### Seeded development accounts
+
+| Username | Password | Role |
+|---|---|---|
+| `admin` | `Admin@123` | Administrator |
+| `dr.perera` | `Dentist@123` | Dentist |
+| `dr.silva` | `Dentist@123` | Dentist |
+| `n.fernando` | `Patient@123` | Patient |
+| `s.jayawardena` | `Patient@123` | Patient |
+
+Demonstration credentials only. They must be removed or rotated before any real deployment.
+
+---
 
 ## Testing
 
@@ -127,6 +159,10 @@ console at startup as `Using generated security password: …`.
 .
 ├── src/main/java        application code
 ├── src/main/resources   templates, static assets, configuration, Flyway migrations
+│   └── db/migration
+│       ├── common       portable table DDL and seed data
+│       ├── mysql        triggers, function, stored procedure
+│       └── h2           H2 counterpart, documenting what it cannot express
 ├── src/test/java        automated tests
 ├── pom.xml              Maven build
 └── my-docs/             assessment brief, plan and report working files (git-ignored)
