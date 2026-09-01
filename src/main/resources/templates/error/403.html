@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: page('Access denied', ~{:: #content})}">
+<body>
+<section id="content" class="centre">
+
+    <div class="hero">
+        <p class="eyebrow">403</p>
+        <h1>Access denied</h1>
+        <p class="tagline">You do not have permission to view that page.</p>
+    </div>
+
+    <div class="card">
+        <p>If you believe you should have access, please contact the clinic administrator.</p>
+        <p class="muted">
+            <a th:href="${returnUrl}">Return to your dashboard</a>
+        </p>
+    </div>
+
+</section>
+</body>
+</html>

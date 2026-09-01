@@ -1,6 +1,7 @@
 package lk.icbt.dentalclinic.controller;
 
 import lk.icbt.dentalclinic.config.SecurityConfig;
+import lk.icbt.dentalclinic.security.RoleAwareAuthenticationSuccessHandler;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +21,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * accidentally locks down the landing page, this test fails.
  */
 @WebMvcTest(HomeController.class)
-@Import(SecurityConfig.class)
+@Import({SecurityConfig.class, RoleAwareAuthenticationSuccessHandler.class})
 class HomeControllerTest {
 
     @Autowired

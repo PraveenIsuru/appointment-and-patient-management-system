@@ -1,40 +1,44 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title th:text="${clinicName}">Sunrise Dental Clinic</title>
-    <link rel="stylesheet" th:href="@{/css/main.css}">
-</head>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{fragments/layout :: page('Home', ~{:: #content})}">
 <body>
-<main class="shell">
-    <header class="hero">
+<section id="content">
+
+    <div class="hero">
         <p class="eyebrow">CIS6003 &middot; Advanced Programming</p>
         <h1 th:text="${clinicName}">Sunrise Dental Clinic</h1>
         <p class="tagline" th:text="${tagline}">Appointment &amp; Patient Management System</p>
-    </header>
+    </div>
 
-    <section class="card">
-        <h2>Build status</h2>
-        <p class="ok">M0 complete &mdash; Spring Boot foundation is running.</p>
-        <p class="muted">
-            Roles to be implemented: <strong>Admin</strong>, <strong>Dentist</strong>,
-            <strong>Patient</strong>. Authentication arrives in M3.
+    <div class="card">
+        <h2>About this system</h2>
+        <p>
+            Sunrise Dental Clinic replaced paper files and notebooks with this system to remove
+            double bookings, lost patient records, long waiting times and billing errors.
         </p>
-    </section>
+    </div>
 
-    <section class="card">
-        <h2>Developer links</h2>
-        <ul class="links">
-            <li><a th:href="@{/login}">Login</a> &mdash; default form login</li>
-            <li><a th:href="@{/h2-console}">H2 console</a> &mdash; development database</li>
-            <li><a th:href="@{/actuator/health}">Health check</a></li>
-        </ul>
-    </section>
+    <div class="card" sec:authorize="!isAuthenticated()">
+        <h2>Getting started</h2>
+        <p>
+            Clinic staff and dentists sign in with the account issued to them.
+            Patients can <a th:href="@{/register}">create an account</a> to book and manage
+            their own appointments.
+        </p>
+        <p><a class="btn" th:href="@{/login}">Sign in</a></p>
+    </div>
 
-    <footer>
-        <p class="muted">Sunrise Dental Clinic, Colombo &middot; academic project</p>
-    </footer>
-</main>
+    <div class="card" sec:authorize="isAuthenticated()">
+        <h2>You are signed in</h2>
+        <p>
+            Continue to
+            <a sec:authorize="hasRole('ADMIN')" th:href="@{/admin/dashboard}">your dashboard</a>
+            <a sec:authorize="hasRole('DENTIST')" th:href="@{/dentist/schedule}">your schedule</a>
+            <a sec:authorize="hasRole('PATIENT')" th:href="@{/patient/dashboard}">your appointments</a>.
+        </p>
+    </div>
+
+</section>
 </body>
 </html>

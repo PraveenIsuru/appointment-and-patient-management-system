@@ -3,23 +3,104 @@
     --muted: #5d6f7d;
     --line: #dfe6ec;
     --accent: #0f7b8a;
+    --accent-dark: #0b5f6b;
     --ok: #1c7c4a;
+    --ok-bg: #e8f6ee;
+    --warn: #8a5a0f;
+    --warn-bg: #fdf3e2;
+    --danger: #a32020;
+    --danger-bg: #fdecec;
     --bg: #f6f8fa;
+    --card: #ffffff;
 }
 
 * { box-sizing: border-box; }
 
 body {
     margin: 0;
-    padding: 2.5rem 1.25rem;
     background: var(--bg);
     color: var(--ink);
     font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
 
-.shell { max-width: 46rem; margin: 0 auto; }
+/* ------------------------------------------------------------------ topbar --- */
 
-.hero { margin-bottom: 2rem; }
+.topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+    padding: .75rem 1.5rem;
+    background: var(--card);
+    border-bottom: 1px solid var(--line);
+}
+
+.brand {
+    display: inline-flex;
+    align-items: center;
+    gap: .6rem;
+    text-decoration: none;
+    color: var(--ink);
+    font-weight: 600;
+}
+
+.brand-mark {
+    display: grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 7px;
+    background: var(--accent);
+    color: #fff;
+    font-size: .8rem;
+    letter-spacing: .04em;
+}
+
+.topnav {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    font-size: .93rem;
+}
+
+.topnav a { color: var(--accent); text-decoration: none; }
+.topnav a:hover { text-decoration: underline; }
+
+.who {
+    display: inline-flex;
+    align-items: center;
+    gap: .45rem;
+    padding-left: 1rem;
+    border-left: 1px solid var(--line);
+    color: var(--muted);
+}
+
+.chip {
+    padding: .1rem .5rem;
+    border-radius: 999px;
+    background: #eef4f6;
+    color: var(--accent-dark);
+    font-size: .74rem;
+    font-weight: 600;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+}
+
+.inline-form { display: inline; margin: 0; }
+
+/* ------------------------------------------------------------------- shell --- */
+
+.shell {
+    max-width: 52rem;
+    margin: 0 auto;
+    padding: 2.25rem 1.25rem 3rem;
+}
+
+.shell.narrow { max-width: 30rem; }
+
+.hero { margin-bottom: 1.75rem; }
 
 .eyebrow {
     margin: 0 0 .4rem;
@@ -30,20 +111,23 @@ body {
     font-weight: 600;
 }
 
-h1 { margin: 0; font-size: 2rem; letter-spacing: -.02em; }
+h1 { margin: 0; font-size: 1.9rem; letter-spacing: -.02em; }
+h2 { font-size: 1.15rem; }
 
 .tagline { margin: .35rem 0 0; color: var(--muted); font-size: 1.05rem; }
 
+/* -------------------------------------------------------------------- card --- */
+
 .card {
-    background: #fff;
+    background: var(--card);
     border: 1px solid var(--line);
     border-radius: 10px;
-    padding: 1.25rem 1.4rem;
+    padding: 1.35rem 1.5rem;
     margin-bottom: 1rem;
 }
 
-.card h2 {
-    margin: 0 0 .6rem;
+.card > h2 {
+    margin: 0 0 .8rem;
     font-size: .82rem;
     letter-spacing: .07em;
     text-transform: uppercase;
@@ -51,14 +135,163 @@ h1 { margin: 0; font-size: 2rem; letter-spacing: -.02em; }
     font-weight: 600;
 }
 
-.card p { margin: .3rem 0; }
+.card p { margin: .35rem 0; }
 
-.ok { color: var(--ok); font-weight: 600; }
 .muted { color: var(--muted); font-size: .93rem; }
+.ok { color: var(--ok); font-weight: 600; }
 
 .links { margin: 0; padding-left: 1.1rem; }
 .links li { margin: .3rem 0; }
 
 a { color: var(--accent); }
 
-footer { margin-top: 2rem; text-align: center; }
+/* ------------------------------------------------------------------ alerts --- */
+
+.alert {
+    padding: .7rem .95rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    font-size: .94rem;
+    border: 1px solid transparent;
+}
+
+.alert-error   { background: var(--danger-bg); color: var(--danger); border-color: #f3c9c9; }
+.alert-success { background: var(--ok-bg);     color: var(--ok);     border-color: #c5e6d3; }
+.alert-info    { background: var(--warn-bg);   color: var(--warn);   border-color: #f0dcb8; }
+
+/* ------------------------------------------------------------------- forms --- */
+
+.field { margin-bottom: 1rem; }
+
+.field label {
+    display: block;
+    margin-bottom: .3rem;
+    font-size: .88rem;
+    font-weight: 600;
+    color: var(--ink);
+}
+
+.field input,
+.field textarea,
+.field select {
+    width: 100%;
+    padding: .55rem .7rem;
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    font: inherit;
+    font-size: .95rem;
+    background: #fff;
+    color: var(--ink);
+}
+
+.field input:focus,
+.field textarea:focus,
+.field select:focus {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+    border-color: var(--accent);
+}
+
+.field input.invalid { border-color: var(--danger); }
+
+.field-error {
+    display: block;
+    margin-top: .28rem;
+    font-size: .84rem;
+    color: var(--danger);
+}
+
+.hint {
+    display: block;
+    margin-top: .28rem;
+    font-size: .82rem;
+    color: var(--muted);
+}
+
+.field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 1rem;
+}
+
+@media (max-width: 34rem) {
+    .field-row { grid-template-columns: 1fr; }
+}
+
+.checkline {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    margin-bottom: 1rem;
+    font-size: .93rem;
+}
+
+.checkline input { width: auto; }
+
+/* ------------------------------------------------------------------ button --- */
+
+.btn {
+    display: inline-block;
+    padding: .6rem 1.1rem;
+    border: 1px solid var(--accent);
+    border-radius: 7px;
+    background: var(--accent);
+    color: #fff;
+    font: inherit;
+    font-size: .95rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.btn:hover { background: var(--accent-dark); border-color: var(--accent-dark); }
+
+.btn-block { width: 100%; }
+
+.btn-small { padding: .32rem .7rem; font-size: .85rem; }
+
+.btn-quiet {
+    background: transparent;
+    color: var(--accent);
+}
+
+.btn-quiet:hover { background: #eef4f6; color: var(--accent-dark); }
+
+/* ------------------------------------------------------------------- lists --- */
+
+.detail {
+    margin: 0;
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: .4rem 1.25rem;
+    font-size: .94rem;
+}
+
+.detail dt { color: var(--muted); }
+.detail dd { margin: 0; }
+
+.steps { margin: 0; padding-left: 1.25rem; }
+.steps li { margin: .45rem 0; }
+
+.empty {
+    padding: 1.5rem;
+    text-align: center;
+    color: var(--muted);
+    border: 1px dashed var(--line);
+    border-radius: 8px;
+    font-size: .94rem;
+}
+
+/* ------------------------------------------------------------------ footer --- */
+
+.footer {
+    padding: 1.5rem;
+    text-align: center;
+    border-top: 1px solid var(--line);
+    color: var(--muted);
+    font-size: .86rem;
+}
+
+.footer p { margin: 0; }
+
+.centre { text-align: center; }

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{fragments/layout :: page('Help', ~{:: #content})}">
+<body>
+<section id="content">
+
+    <div class="hero">
+        <p class="eyebrow">Requirement 5 &middot; Help</p>
+        <h1>How to use the system</h1>
+        <p class="tagline">Step-by-step instructions for the tasks your role can perform</p>
+    </div>
+
+    <div class="card">
+        <h2>Signing in and out</h2>
+        <ol class="steps">
+            <li>Enter the username and password issued to you and select <strong>Sign in</strong>.</li>
+            <li>Tick <strong>Keep me signed in</strong> only on a device that is yours. It keeps
+                you signed in for 14 days.</li>
+            <li>Select <strong>Sign out</strong> in the top bar when you finish. On a shared
+                clinic computer, always sign out rather than only closing the window.</li>
+            <li>If the message <em>Invalid username or password</em> appears, check both fields.
+                The same message is shown whichever one is wrong, deliberately: it stops anyone
+                using the form to discover which usernames exist.</li>
+        </ol>
+    </div>
+
+    <div class="card" sec:authorize="hasRole('ADMIN')">
+        <h2>Administrator tasks</h2>
+        <ol class="steps">
+            <li>Open <strong>Dashboard</strong> from the top bar.</li>
+            <li>Registering an appointment, searching by appointment number, and issuing bills
+                become available in the next milestones.</li>
+            <li>Give each member of staff their own account. Shared accounts make the audit
+                trail meaningless, because every change then looks like the same person.</li>
+        </ol>
+    </div>
+
+    <div class="card" sec:authorize="hasRole('DENTIST')">
+        <h2>Dentist tasks</h2>
+        <ol class="steps">
+            <li>Open <strong>My schedule</strong> to see your consulting session and your
+                appointments for the day.</li>
+            <li>You see only your own schedule and the histories of patients assigned to you.</li>
+        </ol>
+    </div>
+
+    <div class="card" sec:authorize="hasRole('PATIENT')">
+        <h2>Patient tasks</h2>
+        <ol class="steps">
+            <li>Open <strong>My appointments</strong> to see your record and upcoming visits.</li>
+            <li>Keep your contact number up to date so the clinic can reach you if a
+                appointment has to be moved.</li>
+            <li>You can see only your own records. Nobody else's are reachable from your
+                account.</li>
+        </ol>
+    </div>
+
+    <div class="card">
+        <h2>Keeping the clinic's data safe</h2>
+        <ul class="links">
+            <li>Never share your password. Clinic staff will never ask you for it.</li>
+            <li>Patient records are health data. Open only the records you need for the
+                task in front of you.</li>
+            <li>Every change to an appointment is recorded in the audit trail with the
+                username that made it and the time it happened.</li>
+        </ul>
+    </div>
+
+</section>
+</body>
+</html>

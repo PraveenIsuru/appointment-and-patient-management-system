@@ -115,8 +115,20 @@ public abstract class User {
         this.failedLoginAttempts = 0;
     }
 
+    /** Suspends the account. A deactivated user cannot sign in. */
     public void deactivate() {
         this.active = false;
+    }
+
+    /**
+     * Restores a suspended account.
+     *
+     * <p>Also clears the failure counter: an account being reinstated should not still be
+     * carrying the failed attempts that preceded its suspension.
+     */
+    public void activate() {
+        this.active = true;
+        this.failedLoginAttempts = 0;
     }
 
     /** Landing page for this user's role, used after sign-in. */

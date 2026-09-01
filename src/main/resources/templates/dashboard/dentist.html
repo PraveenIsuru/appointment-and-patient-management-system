@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: page('My schedule', ~{:: #content})}">
+<body>
+<section id="content">
+
+    <div class="hero">
+        <p class="eyebrow">Dentist</p>
+        <h1 th:text="${principal.fullName}">Dentist</h1>
+        <p class="tagline" th:text="${#temporals.format(today, 'EEEE d MMMM yyyy')}">Today</p>
+    </div>
+
+    <div class="card" th:if="${dentist != null}">
+        <h2>Practice details</h2>
+        <dl class="detail">
+            <dt>Dentist number</dt><dd th:text="${dentist.dentistNo}">DEN-000</dd>
+            <dt>Specialisation</dt><dd th:text="${dentist.specialisation}">Specialisation</dd>
+            <dt>Consulting session</dt>
+            <dd>
+                <span th:text="${#temporals.format(dentist.sessionStart, 'HH:mm')}">08:00</span>
+                &ndash;
+                <span th:text="${#temporals.format(dentist.sessionEnd, 'HH:mm')}">14:00</span>
+            </dd>
+            <dt>Consultation fee</dt>
+            <dd th:text="'LKR ' + ${#numbers.formatDecimal(dentist.consultationFee, 1, 'COMMA', 2, 'POINT')}">
+                LKR 0.00
+            </dd>
+        </dl>
+    </div>
+
+    <div class="card">
+        <h2>Today's appointments</h2>
+        <p class="empty">Your schedule appears here once appointment booking lands in M4.</p>
+    </div>
+
+</section>
+</body>
+</html>

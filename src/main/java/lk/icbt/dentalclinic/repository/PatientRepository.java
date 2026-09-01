@@ -14,6 +14,15 @@ public interface PatientRepository extends JpaRepository<Patient, Long> {
 
     Optional<Patient> findByPatientNo(String patientNo);
 
+    /**
+     * Highest patient number issued so far, backing the {@code PAT-000000} generator.
+     *
+     * <p>Uses MAX rather than COUNT so that a deleted record cannot cause the next number to
+     * collide with one already in use.
+     */
+    @Query("SELECT MAX(p.patientNo) FROM Patient p")
+    Optional<String> findHighestPatientNo();
+
     boolean existsByPatientNo(String patientNo);
 
     Optional<Patient> findByUsername(String username);

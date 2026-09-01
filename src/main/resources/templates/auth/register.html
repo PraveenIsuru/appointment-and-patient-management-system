@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: page('Register', ~{:: #content})}">
+<body>
+
+<section id="content">
+
+    <div class="hero">
+        <p class="eyebrow">Sunrise Dental Clinic</p>
+        <h1>Create a patient account</h1>
+        <p class="tagline">Book and manage your own appointments online</p>
+    </div>
+
+    <div class="card">
+        <form th:action="@{/register}" th:object="${form}" method="post" novalidate>
+
+            <!-- Inside the form: #fields resolves against th:object, and evaluating it
+                 outside that scope throws rather than returning false. -->
+            <div th:if="${#fields.hasGlobalErrors()}" class="alert alert-error" role="alert">
+                <p th:each="err : ${#fields.globalErrors()}" th:text="${err}">Error</p>
+            </div>
+
+            <h2>Your details</h2>
+
+            <div class="field">
+                <label for="fullName">Full name</label>
+                <input type="text" id="fullName" th:field="*{fullName}"
+                       th:classappend="${#fields.hasErrors('fullName')} ? 'invalid'"
+                       autocomplete="name">
+                <span class="field-error" th:if="${#fields.hasErrors('fullName')}"
+                      th:errors="*{fullName}">Error</span>
+            </div>
+
+            <div class="field-row">
+                <div class="field">
+                    <label for="dateOfBirth">Date of birth</label>
+                    <input type="date" id="dateOfBirth" th:field="*{dateOfBirth}"
+                           th:classappend="${#fields.hasErrors('dateOfBirth')} ? 'invalid'">
+                    <span class="field-error" th:if="${#fields.hasErrors('dateOfBirth')}"
+                          th:errors="*{dateOfBirth}">Error</span>
+                </div>
+
+                <div class="field">
+                    <label for="contactNumber">Contact number</label>
+                    <input type="tel" id="contactNumber" th:field="*{contactNumber}"
+                           th:classappend="${#fields.hasErrors('contactNumber')} ? 'invalid'"
+                           autocomplete="tel" placeholder="0771234567">
+                    <span class="field-error" th:if="${#fields.hasErrors('contactNumber')}"
+                          th:errors="*{contactNumber}">Error</span>
+                </div>
+            </div>
+
+            <div class="field">
+                <label for="address">Address</label>
+                <input type="text" id="address" th:field="*{address}"
+                       th:classappend="${#fields.hasErrors('address')} ? 'invalid'"
+                       autocomplete="street-address">
+                <span class="field-error" th:if="${#fields.hasErrors('address')}"
+                      th:errors="*{address}">Error</span>
+            </div>
+
+            <div class="field">
+                <label for="allergies">Known allergies <span class="muted">(optional)</span></label>
+                <input type="text" id="allergies" th:field="*{allergies}"
+                       th:classappend="${#fields.hasErrors('allergies')} ? 'invalid'"
+                       placeholder="For example: penicillin">
+                <span class="hint">Tell us now so your dentist sees it before treating you.</span>
+                <span class="field-error" th:if="${#fields.hasErrors('allergies')}"
+                      th:errors="*{allergies}">Error</span>
+            </div>
+
+            <h2>Sign-in details</h2>
+
+            <div class="field">
+                <label for="email">Email address</label>
+                <input type="email" id="email" th:field="*{email}"
+                       th:classappend="${#fields.hasErrors('email')} ? 'invalid'"
+                       autocomplete="email">
+                <span class="field-error" th:if="${#fields.hasErrors('email')}"
+                      th:errors="*{email}">Error</span>
+            </div>
+
+            <div class="field">
+                <label for="username">Username</label>
+                <input type="text" id="username" th:field="*{username}"
+                       th:classappend="${#fields.hasErrors('username')} ? 'invalid'"
+                       autocomplete="username">
+                <span class="field-error" th:if="${#fields.hasErrors('username')}"
+                      th:errors="*{username}">Error</span>
+            </div>
+
+            <div class="field-row">
+                <div class="field">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" th:field="*{password}"
+                           th:classappend="${#fields.hasErrors('password')} ? 'invalid'"
+                           autocomplete="new-password">
+                    <span class="hint">At least 8 characters, with upper case, lower case and a digit.</span>
+                    <span class="field-error" th:if="${#fields.hasErrors('password')}"
+                          th:errors="*{password}">Error</span>
+                </div>
+
+                <div class="field">
+                    <label for="confirmPassword">Confirm password</label>
+                    <input type="password" id="confirmPassword" th:field="*{confirmPassword}"
+                           th:classappend="${#fields.hasErrors('confirmPassword')} ? 'invalid'"
+                           autocomplete="new-password">
+                    <span class="field-error" th:if="${#fields.hasErrors('confirmPassword')}"
+                          th:errors="*{confirmPassword}">Error</span>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-block">Create account</button>
+        </form>
+    </div>
+
+    <p class="muted centre">
+        Already registered? <a th:href="@{/login}">Sign in</a>
+    </p>
+
+</section>
+
+</body>
+</html>

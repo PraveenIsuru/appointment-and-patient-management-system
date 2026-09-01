@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: page('Sign in', ~{:: #content})}">
+<body>
+
+<section id="content" class="auth-panel">
+
+    <div class="hero">
+        <p class="eyebrow">Sunrise Dental Clinic</p>
+        <h1>Sign in</h1>
+        <p class="tagline">Appointment &amp; patient management</p>
+    </div>
+
+    <div th:if="${errorMessage}" class="alert alert-error" role="alert" th:text="${errorMessage}">
+        Invalid username or password.
+    </div>
+    <div th:if="${successMessage}" class="alert alert-success" role="status" th:text="${successMessage}">
+        Account created.
+    </div>
+    <div th:if="${infoMessage}" class="alert alert-info" role="status" th:text="${infoMessage}">
+        Signed out.
+    </div>
+
+    <div class="card">
+        <!-- Spring Security adds the CSRF token automatically to a Thymeleaf th:action form. -->
+        <form th:action="@{/login}" method="post">
+
+            <div class="field">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username"
+                       autocomplete="username" autofocus required>
+            </div>
+
+            <div class="field">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password"
+                       autocomplete="current-password" required>
+            </div>
+
+            <div class="checkline">
+                <input type="checkbox" id="remember-me" name="remember-me">
+                <label for="remember-me">Keep me signed in on this device for 14 days</label>
+            </div>
+
+            <button type="submit" class="btn btn-block">Sign in</button>
+        </form>
+    </div>
+
+    <p class="muted centre">
+        New patient? <a th:href="@{/register}">Create an account</a>
+    </p>
+
+</section>
+
+</body>
+</html>

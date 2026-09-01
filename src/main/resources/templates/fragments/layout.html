@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:fragment="page(pageTitle, body)">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${pageTitle} + ' · Sunrise Dental Clinic'">Sunrise Dental Clinic</title>
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+</head>
+<body>
+
+<header class="topbar">
+    <a class="brand" th:href="@{/}">
+        <span class="brand-mark">SD</span>
+        <span class="brand-name">Sunrise Dental Clinic</span>
+    </a>
+
+    <nav class="topnav">
+        <!-- Signed out -->
+        <th:block sec:authorize="!isAuthenticated()">
+            <a th:href="@{/login}">Sign in</a>
+            <a class="btn btn-small" th:href="@{/register}">Register</a>
+        </th:block>
+
+        <!-- Signed in: only the links this role can actually use -->
+        <th:block sec:authorize="isAuthenticated()">
+            <a sec:authorize="hasRole('ADMIN')" th:href="@{/admin/dashboard}">Dashboard</a>
+            <a sec:authorize="hasRole('DENTIST')" th:href="@{/dentist/schedule}">My schedule</a>
+            <a sec:authorize="hasRole('PATIENT')" th:href="@{/patient/dashboard}">My appointments</a>
+            <a th:href="@{/help}">Help</a>
+
+            <span class="who">
+                <span sec:authentication="principal.fullName">Name</span>
+                <span class="chip" sec:authentication="principal.displayRole">Role</span>
+            </span>
+
+            <!-- POST, not a link: signing out is a state change, and a GET logout can be
+                 triggered by any page that can make the browser fetch a URL. -->
+            <form th:action="@{/logout}" method="post" class="inline-form">
+                <button type="submit" class="btn btn-small btn-quiet">Sign out</button>
+            </form>
+        </th:block>
+    </nav>
+</header>
+
+<main class="shell">
+    <th:block th:replace="${body}">Page content</th:block>
+</main>
+
+<footer class="footer">
+    <p>Sunrise Dental Clinic, Colombo · CIS6003 Advanced Programming · academic project</p>
+</footer>
+
+</body>
+</html>

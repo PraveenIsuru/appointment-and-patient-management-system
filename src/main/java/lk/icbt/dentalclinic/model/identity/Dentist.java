@@ -87,7 +87,9 @@ public class Dentist extends User {
 
     @Override
     public String getDashboardUrl() {
-        return "/dentist/dashboard";
+        // /dentist/schedule, not /dentist/dashboard: the login sequence diagram names this
+        // as the DENTIST redirect target, and a dentist's landing page is their day's list.
+        return "/dentist/schedule";
     }
 
     @Override

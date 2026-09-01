@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: page('Administrator', ~{:: #content})}">
+<body>
+<section id="content">
+
+    <div class="hero">
+        <p class="eyebrow">Administrator</p>
+        <h1 th:text="'Welcome, ' + ${principal.fullName}">Welcome</h1>
+        <p class="tagline" th:text="${#temporals.format(today, 'EEEE d MMMM yyyy')}">Today</p>
+    </div>
+
+    <div class="card">
+        <h2>Your access</h2>
+        <p>You can manage appointments, patients, dentists, treatments and billing, and view
+           every report.</p>
+        <p class="muted">Signed in as <strong th:text="${principal.username}">username</strong>.</p>
+    </div>
+
+    <div class="card">
+        <h2>Coming in the next milestones</h2>
+        <ul class="links">
+            <li>Register and search appointments &mdash; M4</li>
+            <li>Billing, receipts and management reports &mdash; M5</li>
+            <li>REST API and Swagger UI &mdash; M6</li>
+        </ul>
+    </div>
+
+</section>
+</body>
+</html>

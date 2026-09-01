@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: page('My appointments', ~{:: #content})}">
+<body>
+<section id="content">
+
+    <div class="hero">
+        <p class="eyebrow">Patient</p>
+        <h1 th:text="'Hello, ' + ${principal.fullName}">Hello</h1>
+        <p class="tagline" th:text="${#temporals.format(today, 'EEEE d MMMM yyyy')}">Today</p>
+    </div>
+
+    <div class="card" th:if="${patient != null}">
+        <h2>Your record</h2>
+        <dl class="detail">
+            <dt>Patient number</dt><dd th:text="${patient.patientNo}">PAT-000000</dd>
+            <dt>Contact number</dt><dd th:text="${patient.contactNumber}">0000000000</dd>
+            <dt>Address</dt><dd th:text="${patient.address}">Address</dd>
+            <dt>Allergies</dt>
+            <dd th:text="${patient.allergies} ?: 'None recorded'">None recorded</dd>
+        </dl>
+        <p class="muted">
+            Your address and contact number are held once on your record, so updating them
+            corrects your whole history.
+        </p>
+    </div>
+
+    <div class="card">
+        <h2>Your appointments</h2>
+        <p class="empty">Booking opens in M4. Your upcoming visits will be listed here.</p>
+    </div>
+
+</section>
+</body>
+</html>
