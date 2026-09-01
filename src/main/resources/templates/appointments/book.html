@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: page('Book an appointment', ~{:: #content})}">
+<body>
+
+<section id="content">
+
+    <div class="hero">
+        <p class="eyebrow">New appointment</p>
+        <h1>Book an appointment</h1>
+        <p class="tagline">Choose a dentist, a treatment and a free slot</p>
+    </div>
+
+    <div class="card">
+        <form th:action="@{/appointments}" th:object="${form}" method="post" novalidate>
+
+            <div th:if="${#fields.hasGlobalErrors()}" class="alert alert-error" role="alert">
+                <p th:each="err : ${#fields.globalErrors()}" th:text="${err}">Error</p>
+            </div>
+
+            <!-- Staff book on a patient's behalf. A patient never sees this, and the service
+                 ignores any submitted patientId for a patient's own booking. -->
+            <div class="field" th:if="${bookingForOthers}">
+                <label for="patientId">Patient</label>
+                <select id="patientId" th:field="*{patientId}"
+                        th:classappend="${#fields.hasErrors('patientId')} ? 'invalid'">
+                    <option value="">Choose a patient…</option>
+                    <option th:each="p : ${patients}"
+                            th:value="${p.id}"
+                            th:text="${p.patientNo} + ' — ' + ${p.fullName}">PAT-000001</option>
+                </select>
+                <span class="field-error" th:if="${#fields.hasErrors('patientId')}"
+                      th:errors="*{patientId}">Error</span>
+            </div>
+
+            <div class="field-row">
+                <div class="field">
+                    <label for="dentistId">Dentist</label>
+                    <select id="dentistId" th:field="*{dentistId}"
+                            th:classappend="${#fields.hasErrors('dentistId')} ? 'invalid'">
+                        <option value="">Choose a dentist…</option>
+                        <option th:each="d : ${dentists}"
+                                th:value="${d.id}"
+                                th:text="${d.fullName} + ' — ' + ${d.specialisation}
+                                         + ' (' + ${#temporals.format(d.sessionStart, 'HH:mm')}
+                                         + '–' + ${#temporals.format(d.sessionEnd, 'HH:mm')} + ')'">
+                            Dr Name
+                        </option>
+                    </select>
+                    <span class="hint">Each dentist consults only within their own session.</span>
+                    <span class="field-error" th:if="${#fields.hasErrors('dentistId')}"
+                          th:errors="*{dentistId}">Error</span>
+                </div>
+
+                <div class="field">
+                    <label for="treatmentId">Treatment</label>
+                    <select id="treatmentId" th:field="*{treatmentId}"
+                            th:classappend="${#fields.hasErrors('treatmentId')} ? 'invalid'">
+                        <option value="">Choose a treatment…</option>
+                        <option th:each="t : ${treatments}"
+                                th:value="${t.id}"
+                                th:text="${t.name} + ' (' + ${t.estimatedMinutes} + ' min)'">
+                            Treatment
+                        </option>
+                    </select>
+                    <span class="field-error" th:if="${#fields.hasErrors('treatmentId')}"
+                          th:errors="*{treatmentId}">Error</span>
+                </div>
+            </div>
+
+            <div class="field-row">
+                <div class="field">
+                    <label for="appointmentDate">Date</label>
+                    <input type="date" id="appointmentDate" th:field="*{appointmentDate}"
+                           th:min="${today}"
+                           th:classappend="${#fields.hasErrors('appointmentDate')} ? 'invalid'">
+                    <span class="field-error" th:if="${#fields.hasErrors('appointmentDate')}"
+                          th:errors="*{appointmentDate}">Error</span>
+                </div>
+
+                <div class="field">
+                    <label for="appointmentTime">Time</label>
+                    <select id="appointmentTime" th:field="*{appointmentTime}"
+                            th:classappend="${#fields.hasErrors('appointmentTime')} ? 'invalid'">
+                        <option value="">Choose a time…</option>
+                        <option th:each="slot : ${slots}"
+                                th:value="${slot}"
+                                th:text="${#temporals.format(slot, 'HH:mm')}">08:00</option>
+                    </select>
+                    <span class="hint">The clinic is open 08:00–20:00, in 30-minute slots.</span>
+                    <span class="field-error" th:if="${#fields.hasErrors('appointmentTime')}"
+                          th:errors="*{appointmentTime}">Error</span>
+                </div>
+            </div>
+
+            <h2>Patient contact details</h2>
+            <p class="muted">
+                Held once on the patient record, so a change corrects the whole history.
+            </p>
+
+            <div class="field">
+                <label for="contactNumber">Contact number</label>
+                <input type="tel" id="contactNumber" th:field="*{contactNumber}"
+                       th:classappend="${#fields.hasErrors('contactNumber')} ? 'invalid'"
+                       placeholder="0771234567">
+                <span class="field-error" th:if="${#fields.hasErrors('contactNumber')}"
+                      th:errors="*{contactNumber}">Error</span>
+            </div>
+
+            <div class="field">
+                <label for="address">Address</label>
+                <input type="text" id="address" th:field="*{address}"
+                       th:classappend="${#fields.hasErrors('address')} ? 'invalid'">
+                <span class="field-error" th:if="${#fields.hasErrors('address')}"
+                      th:errors="*{address}">Error</span>
+            </div>
+
+            <div class="field">
+                <label for="reasonForVisit">Reason for visit <span class="muted">(optional)</span></label>
+                <input type="text" id="reasonForVisit" th:field="*{reasonForVisit}"
+                       placeholder="For example: pain in a lower molar">
+                <span class="field-error" th:if="${#fields.hasErrors('reasonForVisit')}"
+                      th:errors="*{reasonForVisit}">Error</span>
+            </div>
+
+            <button type="submit" class="btn btn-block">Confirm appointment</button>
+        </form>
+    </div>
+
+    <p class="muted centre"><a th:href="@{/appointments}">Back to appointments</a></p>
+
+</section>
+
+</body>
+</html>

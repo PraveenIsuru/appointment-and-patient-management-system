@@ -3,6 +3,7 @@ package lk.icbt.dentalclinic.controller;
 import lk.icbt.dentalclinic.model.identity.Dentist;
 import lk.icbt.dentalclinic.model.identity.Patient;
 import lk.icbt.dentalclinic.security.ClinicUserDetails;
+import lk.icbt.dentalclinic.service.AppointmentService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -26,6 +27,12 @@ import java.time.LocalDate;
 @Controller
 public class DashboardController {
 
+    private final AppointmentService appointmentService;
+
+    public DashboardController(AppointmentService appointmentService) {
+        this.appointmentService = appointmentService;
+    }
+
     @GetMapping("/admin/dashboard")
     @PreAuthorize("hasRole('ADMIN')")
     public String adminDashboard(@AuthenticationPrincipal ClinicUserDetails principal,
@@ -41,6 +48,8 @@ public class DashboardController {
         }
         model.addAttribute("principal", principal);
         model.addAttribute("today", LocalDate.now());
+        model.addAttribute("todaysAppointments",
+                appointmentService.scheduleForDate(LocalDate.now()));
         return "dashboard/admin";
     }
 
@@ -52,6 +61,8 @@ public class DashboardController {
         model.addAttribute("today", LocalDate.now());
         if (principal.getUser() instanceof Dentist dentist) {
             model.addAttribute("dentist", dentist);
+            model.addAttribute("todaysAppointments",
+                    appointmentService.scheduleFor(dentist.getId(), LocalDate.now()));
         }
         return "dashboard/dentist";
     }
@@ -64,6 +75,8 @@ public class DashboardController {
         model.addAttribute("today", LocalDate.now());
         if (principal.getUser() instanceof Patient patient) {
             model.addAttribute("patient", patient);
+            model.addAttribute("myAppointments",
+                    appointmentService.findVisibleTo(patient));
         }
         return "dashboard/patient";
     }

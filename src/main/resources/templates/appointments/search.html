@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: page('Find an appointment', ~{:: #content})}">
+<body>
+<section id="content">
+
+    <div class="hero">
+        <p class="eyebrow">Requirement 3 &middot; Display appointment details</p>
+        <h1>Find an appointment</h1>
+        <p class="tagline">Search using the appointment number</p>
+    </div>
+
+    <div class="card">
+        <form th:action="@{/appointments/search}" method="get">
+            <div class="field">
+                <label for="appointmentNo">Appointment number</label>
+                <input type="text" id="appointmentNo" name="appointmentNo"
+                       placeholder="APT-2026-0001" autofocus required>
+                <span class="hint">Case does not matter.</span>
+            </div>
+            <button type="submit" class="btn btn-block">Search</button>
+        </form>
+    </div>
+
+    <p class="muted centre"><a th:href="@{/appointments}">Back to appointments</a></p>
+
+</section>
+</body>
+</html>

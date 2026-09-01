@@ -30,7 +30,30 @@
 
     <div class="card">
         <h2>Today's appointments</h2>
-        <p class="empty">Your schedule appears here once appointment booking lands in M4.</p>
+        <p class="empty" th:if="${#lists.isEmpty(todaysAppointments)}">
+            Nothing booked for today.
+        </p>
+        <div class="table-scroll" th:unless="${#lists.isEmpty(todaysAppointments)}">
+            <table class="grid">
+                <thead>
+                <tr><th>Time</th><th>Number</th><th>Patient</th><th>Treatment</th><th>Status</th></tr>
+                </thead>
+                <tbody>
+                <tr th:each="a : ${todaysAppointments}">
+                    <td th:text="${#temporals.format(a.appointmentTime, 'HH:mm')}">10:00</td>
+                    <td><a th:href="@{'/appointments/' + ${a.appointmentNo}}"
+                           th:text="${a.appointmentNo}">APT</a></td>
+                    <td th:text="${a.patient.fullName}">Name</td>
+                    <td th:text="${a.treatment.name}">Treatment</td>
+                    <td><span class="chip" th:text="${a.status}">SCHEDULED</span></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <p class="muted" style="margin-top:.9rem;">
+            <a th:href="@{/appointments}">All my appointments</a>
+        </p>
     </div>
 
 </section>

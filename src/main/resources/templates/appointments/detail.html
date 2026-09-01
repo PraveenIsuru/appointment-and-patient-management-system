@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{fragments/layout :: page('Appointment', ~{:: #content})}">
+<body>
+
+<section id="content">
+
+    <div class="hero">
+        <p class="eyebrow">Appointment</p>
+        <h1 th:text="${appointment.appointmentNo}">APT-2026-0001</h1>
+        <p class="tagline">
+            <span class="chip" th:text="${appointment.status}">SCHEDULED</span>
+        </p>
+    </div>
+
+    <div th:if="${successMessage}" class="alert alert-success" role="status"
+         th:text="${successMessage}">Saved.</div>
+    <div th:if="${errorMessage}" class="alert alert-error" role="alert"
+         th:text="${errorMessage}">Error.</div>
+
+    <div class="card">
+        <h2>Visit</h2>
+        <dl class="detail">
+            <dt>Date</dt>
+            <dd th:text="${#temporals.format(appointment.appointmentDate, 'EEEE d MMMM yyyy')}">Date</dd>
+            <dt>Time</dt>
+            <dd th:text="${#temporals.format(appointment.appointmentTime, 'HH:mm')}">10:00</dd>
+            <dt>Dentist</dt>
+            <dd th:text="${appointment.dentist.fullName}">Dentist</dd>
+            <dt>Treatment</dt>
+            <dd th:text="${appointment.treatment.name}">Treatment</dd>
+            <dt th:if="${appointment.reasonForVisit}">Reason</dt>
+            <dd th:if="${appointment.reasonForVisit}" th:text="${appointment.reasonForVisit}">Reason</dd>
+            <dt th:if="${appointment.cancellationReason}">Cancelled because</dt>
+            <dd th:if="${appointment.cancellationReason}"
+                th:text="${appointment.cancellationReason}">Reason</dd>
+        </dl>
+    </div>
+
+    <div class="card">
+        <h2>Patient</h2>
+        <dl class="detail">
+            <dt>Patient number</dt><dd th:text="${appointment.patient.patientNo}">PAT-000001</dd>
+            <dt>Name</dt><dd th:text="${appointment.patient.fullName}">Name</dd>
+            <dt>Contact number</dt><dd th:text="${appointment.patient.contactNumber}">077</dd>
+            <dt>Address</dt><dd th:text="${appointment.patient.address}">Address</dd>
+            <dt>Allergies</dt>
+            <dd th:text="${appointment.patient.allergies} ?: 'None recorded'">None</dd>
+        </dl>
+    </div>
+
+    <div class="card" th:if="${appointment.clinicalNotes}">
+        <h2>Clinical notes</h2>
+        <p th:text="${appointment.clinicalNotes}">Notes</p>
+    </div>
+
+    <!-- Actions are shown only when the status actually permits them, so the page never
+         offers a button that would be refused. -->
+    <div class="card" th:unless="${appointment.status.terminal}">
+        <h2>Actions</h2>
+
+        <div sec:authorize="hasRole('ADMIN')"
+             th:if="${appointment.status.name() == 'SCHEDULED'}">
+            <form th:action="@{'/appointments/' + ${appointment.appointmentNo} + '/confirm'}"
+                  method="post" class="inline-form">
+                <button type="submit" class="btn btn-small">Confirm with patient</button>
+            </form>
+        </div>
+
+        <div sec:authorize="hasAnyRole('DENTIST','ADMIN')" style="margin-top:.75rem;">
+            <form th:action="@{'/appointments/' + ${appointment.appointmentNo} + '/complete'}"
+                  method="post">
+                <div class="field">
+                    <label for="clinicalNotes">Record treatment</label>
+                    <input type="text" id="clinicalNotes" name="clinicalNotes"
+                           placeholder="Clinical notes">
+                </div>
+                <button type="submit" class="btn btn-small">Mark completed</button>
+            </form>
+        </div>
+
+        <div th:if="${canModify}" style="margin-top:1rem;">
+            <form th:action="@{'/appointments/' + ${appointment.appointmentNo} + '/reschedule'}"
+                  method="post">
+                <div class="field-row">
+                    <div class="field">
+                        <label for="appointmentDate">Move to date</label>
+                        <input type="date" id="appointmentDate" name="appointmentDate"
+                               th:value="${appointment.appointmentDate}">
+                    </div>
+                    <div class="field">
+                        <label for="appointmentTime">Move to time</label>
+                        <input type="time" id="appointmentTime" name="appointmentTime"
+                               step="1800" th:value="${appointment.appointmentTime}">
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-small btn-quiet">Reschedule</button>
+            </form>
+
+            <form th:action="@{'/appointments/' + ${appointment.appointmentNo} + '/cancel'}"
+                  method="post" style="margin-top:1rem;">
+                <div class="field">
+                    <label for="reason">Cancel this appointment</label>
+                    <input type="text" id="reason" name="reason" placeholder="Reason">
+                </div>
+                <button type="submit" class="btn btn-small btn-quiet">Cancel appointment</button>
+            </form>
+        </div>
+    </div>
+
+    <p class="muted centre"><a th:href="@{/appointments}">Back to appointments</a></p>
+
+</section>
+
+</body>
+</html>

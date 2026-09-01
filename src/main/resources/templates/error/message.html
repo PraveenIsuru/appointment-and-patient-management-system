@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: page('Sorry', ~{:: #content})}">
+<body>
+<section id="content" class="centre">
+
+    <div class="hero">
+        <h1 th:text="${errorTitle}">Something went wrong</h1>
+    </div>
+
+    <div class="card">
+        <p th:text="${errorMessage}">Please try again.</p>
+        <p class="muted"><a th:href="@{/appointments}">Back to appointments</a></p>
+    </div>
+
+</section>
+</body>
+</html>

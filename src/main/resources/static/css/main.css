@@ -295,3 +295,37 @@ a { color: var(--accent); }
 .footer p { margin: 0; }
 
 .centre { text-align: center; }
+
+/* ------------------------------------------------------------------ tables --- */
+
+/* Wide tables scroll inside their own box rather than making the page scroll. */
+.table-scroll {
+    overflow-x: auto;
+    margin: 0 -.4rem;
+    padding: 0 .4rem;
+}
+
+.grid {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: .92rem;
+}
+
+.grid th,
+.grid td {
+    padding: .55rem .6rem;
+    text-align: left;
+    border-bottom: 1px solid var(--line);
+    white-space: nowrap;
+}
+
+.grid th {
+    font-size: .76rem;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 600;
+}
+
+.grid tbody tr:last-child td { border-bottom: none; }
+.grid tbody tr:hover { background: #f9fbfc; }

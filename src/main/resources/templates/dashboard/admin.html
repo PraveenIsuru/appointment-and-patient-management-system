@@ -18,9 +18,37 @@
     </div>
 
     <div class="card">
+        <h2>Today at the clinic</h2>
+        <p class="empty" th:if="${#lists.isEmpty(todaysAppointments)}">
+            Nothing booked for today.
+        </p>
+        <div class="table-scroll" th:unless="${#lists.isEmpty(todaysAppointments)}">
+            <table class="grid">
+                <thead>
+                <tr><th>Time</th><th>Number</th><th>Patient</th><th>Treatment</th><th>Status</th></tr>
+                </thead>
+                <tbody>
+                <tr th:each="a : ${todaysAppointments}">
+                    <td th:text="${#temporals.format(a.appointmentTime, 'HH:mm')}">10:00</td>
+                    <td><a th:href="@{'/appointments/' + ${a.appointmentNo}}"
+                           th:text="${a.appointmentNo}">APT</a></td>
+                    <td th:text="${a.patient.fullName}">Name</td>
+                    <td th:text="${a.treatment.name}">Treatment</td>
+                    <td><span class="chip" th:text="${a.status}">SCHEDULED</span></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <p style="margin-top:.9rem;">
+            <a class="btn btn-small" th:href="@{/appointments/new}">Register an appointment</a>
+            <a class="btn btn-small btn-quiet" th:href="@{/appointments/search}">Search by number</a>
+        </p>
+    </div>
+
+    <div class="card">
         <h2>Coming in the next milestones</h2>
         <ul class="links">
-            <li>Register and search appointments &mdash; M4</li>
             <li>Billing, receipts and management reports &mdash; M5</li>
             <li>REST API and Swagger UI &mdash; M6</li>
         </ul>
