@@ -19,7 +19,6 @@ import lk.icbt.dentalclinic.security.AppointmentAccessPolicy;
 import lk.icbt.dentalclinic.service.notification.AppointmentBookedEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -223,7 +222,10 @@ public class AppointmentService {
         Appointment appointment = appointments.findByAppointmentNo(normalise(appointmentNo))
                 .orElseThrow(() -> new AppointmentNotFoundException(appointmentNo));
         if (!accessPolicy.canView(currentUser, appointment)) {
-            throw new AccessDeniedException("You do not have access to that appointment");
+            // Deliberately "not found", not "forbidden" (A8). Confirming that a record
+            // exists but belongs to someone else would let a patient discover valid
+            // appointment numbers by watching which response they get.
+            throw new AppointmentNotFoundException(appointmentNo);
         }
         return appointment;
     }
@@ -308,7 +310,7 @@ public class AppointmentService {
         Appointment appointment = appointments.findByAppointmentNo(normalise(appointmentNo))
                 .orElseThrow(() -> new AppointmentNotFoundException(appointmentNo));
         if (!accessPolicy.canRecordTreatment(currentUser, appointment)) {
-            throw new AccessDeniedException("Only the assigned dentist may record treatment");
+            throw new AppointmentNotFoundException(appointmentNo);
         }
         appointment.complete(clinicalNotes);
         return appointments.saveAndFlush(appointment);
@@ -318,7 +320,7 @@ public class AppointmentService {
         Appointment appointment = appointments.findByAppointmentNo(normalise(appointmentNo))
                 .orElseThrow(() -> new AppointmentNotFoundException(appointmentNo));
         if (!accessPolicy.canModify(currentUser, appointment)) {
-            throw new AccessDeniedException("You do not have access to that appointment");
+            throw new AppointmentNotFoundException(appointmentNo);
         }
         return appointment;
     }

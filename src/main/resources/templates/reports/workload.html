@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: page('Workload report', ~{:: #content})}">
+<body>
+<section id="content">
+
+    <div class="hero">
+        <p class="eyebrow">Report</p>
+        <h1>Dentist workload</h1>
+        <p class="tagline">
+            <span th:text="${#temporals.format(from, 'd MMM yyyy')}">From</span> to
+            <span th:text="${#temporals.format(to, 'd MMM yyyy')}">To</span>
+        </p>
+    </div>
+
+    <div class="card">
+        <form th:action="@{/reports/workload}" method="get">
+            <div class="field-row">
+                <div class="field">
+                    <label for="from">From</label>
+                    <input type="date" id="from" name="from" th:value="${from}">
+                </div>
+                <div class="field">
+                    <label for="to">To</label>
+                    <input type="date" id="to" name="to" th:value="${to}">
+                </div>
+            </div>
+            <button type="submit" class="btn btn-small">Show</button>
+        </form>
+    </div>
+
+    <div class="card">
+        <h2>Per dentist</h2>
+        <div class="table-scroll">
+            <table class="grid">
+                <thead>
+                <tr><th>Dentist</th><th class="num">Booked</th><th class="num">Completed</th>
+                    <th class="num">Completion rate</th><th class="num">Revenue (LKR)</th></tr>
+                </thead>
+                <tbody>
+                <tr th:each="r : ${rows}">
+                    <td>
+                        <span th:text="${r.dentistName}">Name</span>
+                        <span class="muted" th:text="' (' + ${r.dentistNo} + ')'">(DEN)</span>
+                    </td>
+                    <td class="num" th:text="${r.booked}">0</td>
+                    <td class="num" th:text="${r.completed}">0</td>
+                    <td class="num" th:text="${r.completionRate} + '%'">0%</td>
+                    <td class="num"
+                        th:text="${#numbers.formatDecimal(r.revenue, 1, 'COMMA', 2, 'POINT')}">0.00</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <p class="muted" style="margin-top:.8rem;">
+            Dentists with no bookings are listed too — idle chair time is exactly what this
+            report exists to show.
+        </p>
+    </div>
+
+    <p class="muted centre"><a th:href="@{/reports}">All reports</a></p>
+
+</section>
+</body>
+</html>

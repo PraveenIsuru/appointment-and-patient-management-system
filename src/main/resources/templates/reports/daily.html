@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: page('Daily report', ~{:: #content})}">
+<body>
+<section id="content">
+
+    <div class="hero">
+        <p class="eyebrow">Report</p>
+        <h1>Daily operations</h1>
+        <p class="tagline" th:text="${#temporals.format(date, 'EEEE d MMMM yyyy')}">Date</p>
+    </div>
+
+    <div class="card">
+        <form th:action="@{/reports/daily}" method="get">
+            <div class="field">
+                <label for="date">Show a different day</label>
+                <input type="date" id="date" name="date" th:value="${date}">
+            </div>
+            <button type="submit" class="btn btn-small">Show</button>
+        </form>
+    </div>
+
+    <div class="card">
+        <h2>Summary</h2>
+        <dl class="detail">
+            <dt>Appointments booked</dt><dd th:text="${summary.booked}">0</dd>
+            <dt>Completed</dt><dd th:text="${summary.completed}">0</dd>
+            <dt>Cancelled</dt><dd th:text="${summary.cancelled}">0</dd>
+            <dt>Did not attend</dt><dd th:text="${summary.noShows}">0</dd>
+            <dt>Chair time lost</dt>
+            <dd th:text="${summary.lostSlotPercentage} + '%'">0%</dd>
+            <dt>Billed (LKR)</dt>
+            <dd th:text="${#numbers.formatDecimal(summary.billed, 1, 'COMMA', 2, 'POINT')}">0.00</dd>
+            <dt>Collected (LKR)</dt>
+            <dd th:text="${#numbers.formatDecimal(summary.collected, 1, 'COMMA', 2, 'POINT')}">0.00</dd>
+            <dt>Outstanding (LKR)</dt>
+            <dd th:text="${#numbers.formatDecimal(summary.outstanding, 1, 'COMMA', 2, 'POINT')}">0.00</dd>
+        </dl>
+    </div>
+
+    <div class="card">
+        <h2>Schedule</h2>
+        <p class="empty" th:if="${#lists.isEmpty(schedule)}">Nothing booked on this day.</p>
+        <div class="table-scroll" th:unless="${#lists.isEmpty(schedule)}">
+            <table class="grid">
+                <thead>
+                <tr><th>Time</th><th>Number</th><th>Patient</th><th>Dentist</th>
+                    <th>Treatment</th><th>Status</th></tr>
+                </thead>
+                <tbody>
+                <tr th:each="a : ${schedule}">
+                    <td th:text="${#temporals.format(a.appointmentTime, 'HH:mm')}">10:00</td>
+                    <td><a th:href="@{'/appointments/' + ${a.appointmentNo}}"
+                           th:text="${a.appointmentNo}">APT</a></td>
+                    <td th:text="${a.patient.fullName}">Patient</td>
+                    <td th:text="${a.dentist.fullName}">Dentist</td>
+                    <td th:text="${a.treatment.name}">Treatment</td>
+                    <td><span class="chip" th:text="${a.status}">SCHEDULED</span></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <p class="muted centre"><a th:href="@{/reports}">All reports</a></p>
+
+</section>
+</body>
+</html>

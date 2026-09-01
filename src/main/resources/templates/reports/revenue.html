@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: page('Revenue report', ~{:: #content})}">
+<body>
+<section id="content">
+
+    <div class="hero">
+        <p class="eyebrow">Report</p>
+        <h1>Revenue by treatment</h1>
+        <p class="tagline">
+            <span th:text="${#temporals.format(from, 'd MMM yyyy')}">From</span> to
+            <span th:text="${#temporals.format(to, 'd MMM yyyy')}">To</span>
+        </p>
+    </div>
+
+    <div class="card">
+        <form th:action="@{/reports/revenue}" method="get">
+            <div class="field-row">
+                <div class="field">
+                    <label for="from">From</label>
+                    <input type="date" id="from" name="from" th:value="${from}">
+                </div>
+                <div class="field">
+                    <label for="to">To</label>
+                    <input type="date" id="to" name="to" th:value="${to}">
+                </div>
+            </div>
+            <button type="submit" class="btn btn-small">Show</button>
+        </form>
+    </div>
+
+    <div class="card">
+        <h2>Takings</h2>
+        <p class="empty" th:if="${#lists.isEmpty(rows)}">
+            No completed visits in this period.
+        </p>
+        <div class="table-scroll" th:unless="${#lists.isEmpty(rows)}">
+            <table class="grid">
+                <thead>
+                <tr><th>Treatment type</th><th class="num">Visits</th>
+                    <th class="num">Revenue (LKR)</th><th class="num">Average per visit</th></tr>
+                </thead>
+                <tbody>
+                <tr th:each="r : ${rows}">
+                    <td th:text="${r.treatmentType}">TYPE</td>
+                    <td class="num" th:text="${r.visits}">0</td>
+                    <td class="num"
+                        th:text="${#numbers.formatDecimal(r.revenue, 1, 'COMMA', 2, 'POINT')}">0.00</td>
+                    <td class="num"
+                        th:text="${#numbers.formatDecimal(r.averagePerVisit, 1, 'COMMA', 2, 'POINT')}">0.00</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <p class="muted" style="margin-top:.8rem;">
+            Cancelled appointments are excluded. Visits with no bill raised yet count as zero
+            revenue, so this is takings rather than expected income.
+        </p>
+    </div>
+
+    <p class="muted centre"><a th:href="@{/reports}">All reports</a></p>
+
+</section>
+</body>
+</html>

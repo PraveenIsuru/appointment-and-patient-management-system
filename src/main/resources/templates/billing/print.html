@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="'Receipt ' + ${bill.billNo}">Receipt</title>
+    <!--
+      A standalone page rather than the shared layout: a printed receipt should carry the
+      clinic's details and the charges, and nothing else. Navigation and action buttons are
+      absent rather than hidden by a media query, so what reaches the paper is exactly what
+      was intended to.
+    -->
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            padding: 2rem;
+            font: 13px/1.55 "Times New Roman", Georgia, serif;
+            color: #111;
+            background: #fff;
+        }
+
+        .receipt { max-width: 20cm; margin: 0 auto; }
+
+        .clinic { text-align: center; border-bottom: 2px solid #111; padding-bottom: .8rem; }
+        .clinic h1 { margin: 0; font-size: 1.5rem; letter-spacing: .02em; }
+        .clinic p { margin: .15rem 0; font-size: .85rem; }
+
+        .meta {
+            display: flex;
+            justify-content: space-between;
+            gap: 2rem;
+            margin: 1.2rem 0;
+            font-size: .88rem;
+        }
+        .meta dl { margin: 0; }
+        .meta dt { font-weight: bold; display: inline; }
+        .meta dd { display: inline; margin: 0 0 0 .25rem; }
+        .meta div > div { margin-bottom: .2rem; }
+
+        table { width: 100%; border-collapse: collapse; margin-top: .6rem; }
+        th, td { padding: .4rem .5rem; border-bottom: 1px solid #999; text-align: left; }
+        th { border-bottom: 1.5px solid #111; font-size: .8rem; text-transform: uppercase; }
+        .num { text-align: right; white-space: nowrap; }
+        tfoot td { border-bottom: none; padding-top: .5rem; }
+        tfoot .total td { border-top: 1.5px solid #111; font-size: 1.05rem; }
+
+        .status {
+            margin-top: 1.2rem;
+            padding: .5rem .8rem;
+            border: 1px solid #111;
+            display: inline-block;
+            font-size: .85rem;
+        }
+
+        .foot {
+            margin-top: 2rem;
+            padding-top: .8rem;
+            border-top: 1px solid #999;
+            font-size: .78rem;
+            text-align: center;
+            color: #333;
+        }
+
+        .noprint { margin-top: 1.5rem; text-align: center; }
+
+        @media print {
+            body { padding: 0; }
+            .noprint { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="receipt">
+
+    <header class="clinic">
+        <h1>Sunrise Dental Clinic</h1>
+        <p>Galle Road, Colombo 03, Sri Lanka &middot; +94 11 234 5678</p>
+        <p><strong>Patient Receipt</strong></p>
+    </header>
+
+    <div class="meta">
+        <div>
+            <div><dl><dt>Bill no:</dt><dd th:text="${bill.billNo}">BILL</dd></dl></div>
+            <div><dl><dt>Appointment:</dt>
+                <dd th:text="${appointment.appointmentNo}">APT</dd></dl></div>
+            <div><dl><dt>Issued:</dt>
+                <dd th:text="${#temporals.format(bill.issuedAt, 'dd/MM/yyyy HH:mm')}">Date</dd></dl></div>
+        </div>
+        <div>
+            <div><dl><dt>Patient:</dt>
+                <dd th:text="${appointment.patient.fullName}">Name</dd></dl></div>
+            <div><dl><dt>Patient no:</dt>
+                <dd th:text="${appointment.patient.patientNo}">PAT</dd></dl></div>
+            <div><dl><dt>Dentist:</dt>
+                <dd th:text="${appointment.dentist.fullName}">Dentist</dd></dl></div>
+            <div><dl><dt>Visit:</dt>
+                <dd th:text="${#temporals.format(appointment.appointmentDate, 'dd/MM/yyyy')}">Date</dd></dl></div>
+        </div>
+    </div>
+
+    <table>
+        <thead>
+        <tr>
+            <th>Description</th>
+            <th class="num">Unit (LKR)</th>
+            <th class="num">Qty</th>
+            <th class="num">Amount (LKR)</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="line : ${bill.lineItems}">
+            <td th:text="${line.description}">Description</td>
+            <td class="num"
+                th:text="${#numbers.formatDecimal(line.unitPrice, 1, 'COMMA', 2, 'POINT')}">0.00</td>
+            <td class="num" th:text="${line.quantity}">1</td>
+            <td class="num"
+                th:text="${#numbers.formatDecimal(line.lineTotal, 1, 'COMMA', 2, 'POINT')}">0.00</td>
+        </tr>
+        </tbody>
+        <tfoot>
+        <tr th:if="${bill.discountAmount.signum() != 0}">
+            <td colspan="3">Discount</td>
+            <td class="num"
+                th:text="'−' + ${#numbers.formatDecimal(bill.discountAmount, 1, 'COMMA', 2, 'POINT')}">0.00</td>
+        </tr>
+        <tr th:if="${bill.taxAmount.signum() != 0}">
+            <td colspan="3">Tax</td>
+            <td class="num"
+                th:text="${#numbers.formatDecimal(bill.taxAmount, 1, 'COMMA', 2, 'POINT')}">0.00</td>
+        </tr>
+        <tr class="total">
+            <td colspan="3"><strong>Total payable (LKR)</strong></td>
+            <td class="num"><strong
+                th:text="${#numbers.formatDecimal(bill.totalAmount, 1, 'COMMA', 2, 'POINT')}">0.00</strong></td>
+        </tr>
+        </tfoot>
+    </table>
+
+    <p class="status">
+        <span th:if="${bill.status.name() == 'PAID'}">
+            PAID by <span th:text="${bill.paymentMethod}">CASH</span>
+        </span>
+        <span th:if="${bill.status.name() == 'UNPAID'}">PAYMENT DUE</span>
+        <span th:if="${bill.status.name() == 'REFUNDED'}">REFUNDED</span>
+    </p>
+
+    <footer class="foot">
+        <p>Thank you for choosing Sunrise Dental Clinic.</p>
+        <p>This receipt was issued by
+            <span th:text="${bill.issuedBy}">staff</span>. Please retain it for your records.</p>
+    </footer>
+
+    <div class="noprint">
+        <button type="button" onclick="window.print()">Print this receipt</button>
+    </div>
+
+</div>
+
+</body>
+</html>

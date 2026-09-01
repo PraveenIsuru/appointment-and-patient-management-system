@@ -1,10 +1,8 @@
 package lk.icbt.dentalclinic.exception;
 
-import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -23,7 +21,13 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  *   <li><strong>Never confirm existence.</strong> "Not found" and "not yours" produce the
  *       same 404 for an unauthorised caller. Distinguishing them would let a patient discover
  *       which appointment numbers are real by watching the difference — assumption A8 would
- *       hold for the data and leak through the error page instead.</li>
+ *       hold for the data and leak through the error page instead. The services therefore
+ *       throw {@link AppointmentNotFoundException} for a failed row-level check, rather than
+ *       an access-denied exception that would have to be disguised here.</li>
+ *   <li><strong>A role denial is different.</strong> {@code AccessDeniedException} from
+ *       {@code @PreAuthorize} is deliberately <em>not</em> handled in this class: refusing a
+ *       patient the billing screen reveals nothing about any particular record, so it should
+ *       say 403 rather than pretend the page does not exist.</li>
  * </ul>
  */
 @ControllerAdvice
@@ -41,20 +45,14 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * A refused row-level check renders as "not found", not "forbidden".
-     *
-     * <p>Telling a patient that an appointment exists but is not theirs is itself a
-     * disclosure: they could enumerate valid numbers by the difference between the two
-     * responses.
+     * A bill that may not be raised: the treatment is unfinished, already billed, or the
+     * discount exceeds the cap.
      */
-    @ExceptionHandler(AccessDeniedException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public String handleAccessDenied(AccessDeniedException e, HttpServletRequest request,
-                                     Model model) {
-        log.warn("Access denied for {} on {}", request.getRemoteUser(), request.getRequestURI());
-        model.addAttribute("errorTitle", "Appointment not found");
-        model.addAttribute("errorMessage",
-                "No appointment exists with that number. Please check it and try again.");
+    @ExceptionHandler(BillingNotAllowedException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public String handleBillingNotAllowed(BillingNotAllowedException e, Model model) {
+        model.addAttribute("errorTitle", "That bill cannot be raised");
+        model.addAttribute("errorMessage", e.getMessage());
         return "error/message";
     }
 

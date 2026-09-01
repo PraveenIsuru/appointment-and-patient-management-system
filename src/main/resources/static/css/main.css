@@ -329,3 +329,7 @@ a { color: var(--accent); }
 
 .grid tbody tr:last-child td { border-bottom: none; }
 .grid tbody tr:hover { background: #f9fbfc; }
+
+.grid td.num, .grid th.num { text-align: right; }
+.grid tfoot td { border-bottom: none; padding-top: .6rem; }
+.grid tfoot tr.total td { border-top: 2px solid var(--line); font-size: 1rem; }

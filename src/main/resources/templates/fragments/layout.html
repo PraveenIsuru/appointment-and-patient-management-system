@@ -27,6 +27,8 @@
         <!-- Signed in: only the links this role can actually use -->
         <th:block sec:authorize="isAuthenticated()">
             <a sec:authorize="hasRole('ADMIN')" th:href="@{/admin/dashboard}">Dashboard</a>
+            <a sec:authorize="isAuthenticated()" th:href="@{/appointments}">Appointments</a>
+            <a sec:authorize="hasRole('ADMIN')" th:href="@{/reports}">Reports</a>
             <a sec:authorize="hasRole('DENTIST')" th:href="@{/dentist/schedule}">My schedule</a>
             <a sec:authorize="hasRole('PATIENT')" th:href="@{/patient/dashboard}">My appointments</a>
             <a th:href="@{/help}">Help</a>

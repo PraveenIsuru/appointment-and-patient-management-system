@@ -55,6 +55,44 @@
         <p th:text="${appointment.clinicalNotes}">Notes</p>
     </div>
 
+    <div class="card">
+        <h2>Billing</h2>
+
+        <div th:if="${appointment.bill != null}">
+            <dl class="detail">
+                <dt>Bill number</dt>
+                <dd><a th:href="@{'/billing/' + ${appointment.bill.billNo}}"
+                       th:text="${appointment.bill.billNo}">BILL</a></dd>
+                <dt>Total (LKR)</dt>
+                <dd th:text="${#numbers.formatDecimal(appointment.bill.totalAmount, 1, 'COMMA', 2, 'POINT')}">0.00</dd>
+                <dt>Status</dt>
+                <dd><span class="chip" th:text="${appointment.bill.status}">UNPAID</span></dd>
+            </dl>
+        </div>
+
+        <!-- A bill can be raised once, and only for a completed treatment. -->
+        <div th:if="${appointment.bill == null}">
+            <p class="muted" th:unless="${appointment.billable}">
+                A bill can be raised once the treatment has been recorded as completed.
+            </p>
+
+            <form sec:authorize="hasRole('ADMIN')" th:if="${appointment.billable}"
+                  th:action="@{/billing}" method="post">
+                <input type="hidden" name="appointmentNo"
+                       th:value="${appointment.appointmentNo}">
+                <div class="field">
+                    <label for="discountPercent">
+                        Discount % <span class="muted">(optional, maximum 25)</span>
+                    </label>
+                    <input type="number" id="discountPercent" name="discountPercent"
+                           min="0" max="25" step="1" value="0">
+                    <span class="hint">Recorded as its own line on the receipt.</span>
+                </div>
+                <button type="submit" class="btn btn-small">Raise bill</button>
+            </form>
+        </div>
+    </div>
+
     <!-- Actions are shown only when the status actually permits them, so the page never
          offers a button that would be refused. -->
     <div class="card" th:unless="${appointment.status.terminal}">

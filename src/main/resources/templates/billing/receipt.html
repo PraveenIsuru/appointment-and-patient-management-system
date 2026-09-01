@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{fragments/layout :: page('Receipt', ~{:: #content})}">
+<body>
+
+<section id="content">
+
+    <div class="hero">
+        <p class="eyebrow">Bill</p>
+        <h1 th:text="${bill.billNo}">BILL-2026-0001</h1>
+        <p class="tagline">
+            <span class="chip" th:text="${bill.status}">UNPAID</span>
+            for appointment
+            <a th:href="@{'/appointments/' + ${appointment.appointmentNo}}"
+               th:text="${appointment.appointmentNo}">APT-2026-0001</a>
+        </p>
+    </div>
+
+    <div th:if="${successMessage}" class="alert alert-success" role="status"
+         th:text="${successMessage}">Saved.</div>
+
+    <div class="card">
+        <h2>Patient</h2>
+        <dl class="detail">
+            <dt>Patient number</dt><dd th:text="${appointment.patient.patientNo}">PAT-000001</dd>
+            <dt>Name</dt><dd th:text="${appointment.patient.fullName}">Name</dd>
+            <dt>Treatment</dt><dd th:text="${appointment.treatment.name}">Treatment</dd>
+            <dt>Dentist</dt><dd th:text="${appointment.dentist.fullName}">Dentist</dd>
+            <dt>Visit date</dt>
+            <dd th:text="${#temporals.format(appointment.appointmentDate, 'd MMMM yyyy')}">Date</dd>
+            <dt>Issued</dt>
+            <dd th:text="${#temporals.format(bill.issuedAt, 'd MMMM yyyy HH:mm')}">Issued</dd>
+        </dl>
+    </div>
+
+    <div class="card">
+        <h2>Itemised charges</h2>
+        <div class="table-scroll">
+            <table class="grid">
+                <thead>
+                <tr><th>Description</th><th>Category</th><th class="num">Unit</th>
+                    <th class="num">Qty</th><th class="num">Amount</th></tr>
+                </thead>
+                <tbody>
+                <tr th:each="line : ${bill.lineItems}">
+                    <td th:text="${line.description}">Description</td>
+                    <td><span class="chip" th:text="${line.category}">TREATMENT</span></td>
+                    <td class="num"
+                        th:text="${#numbers.formatDecimal(line.unitPrice, 1, 'COMMA', 2, 'POINT')}">0.00</td>
+                    <td class="num" th:text="${line.quantity}">1</td>
+                    <td class="num"
+                        th:text="${#numbers.formatDecimal(line.lineTotal, 1, 'COMMA', 2, 'POINT')}">0.00</td>
+                </tr>
+                </tbody>
+                <tfoot>
+                <tr th:if="${bill.discountAmount.signum() != 0}">
+                    <td colspan="4">Discount</td>
+                    <td class="num"
+                        th:text="'−' + ${#numbers.formatDecimal(bill.discountAmount, 1, 'COMMA', 2, 'POINT')}">0.00</td>
+                </tr>
+                <tr class="total">
+                    <td colspan="4"><strong>Total (LKR)</strong></td>
+                    <td class="num"><strong
+                        th:text="${#numbers.formatDecimal(bill.totalAmount, 1, 'COMMA', 2, 'POINT')}">0.00</strong></td>
+                </tr>
+                </tfoot>
+            </table>
+        </div>
+        <p class="muted" style="margin-top:.8rem;">
+            Total is the consultation fee plus the treatment cost, less any discount, plus tax.
+        </p>
+    </div>
+
+    <div class="card">
+        <h2>Actions</h2>
+        <p>
+            <a class="btn btn-small" th:href="@{'/billing/' + ${bill.billNo} + '/print'}"
+               target="_blank">Print receipt</a>
+        </p>
+
+        <form sec:authorize="hasRole('ADMIN')"
+              th:if="${bill.status.name() == 'UNPAID'}"
+              th:action="@{'/billing/' + ${bill.billNo} + '/pay'}" method="post"
+              style="margin-top:1rem;">
+            <div class="field">
+                <label for="method">Record payment</label>
+                <select id="method" name="method" required>
+                    <option value="CASH">Cash</option>
+                    <option value="CARD">Card</option>
+                    <option value="INSURANCE">Insurance</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-small">Mark as paid</button>
+        </form>
+
+        <p class="ok" th:if="${bill.status.name() == 'PAID'}">
+            Paid by <span th:text="${bill.paymentMethod}">CASH</span>.
+        </p>
+    </div>
+
+</section>
+
+</body>
+</html>

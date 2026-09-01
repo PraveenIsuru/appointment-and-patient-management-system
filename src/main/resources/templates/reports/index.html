@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: page('Reports', ~{:: #content})}">
+<body>
+<section id="content">
+
+    <div class="hero">
+        <p class="eyebrow">Management</p>
+        <h1>Reports</h1>
+        <p class="tagline">Figures the paper system could not produce</p>
+    </div>
+
+    <div class="card">
+        <h2>Daily operations</h2>
+        <p>The day's schedule, with completions, cancellations, no-shows and the proportion of
+           chair time lost.</p>
+        <p><a class="btn btn-small" th:href="@{/reports/daily}">Open</a></p>
+    </div>
+
+    <div class="card">
+        <h2>Revenue by treatment</h2>
+        <p>Which treatments earn their chair time, with the average value of a visit.</p>
+        <p><a class="btn btn-small" th:href="@{/reports/revenue}">Open</a></p>
+    </div>
+
+    <div class="card">
+        <h2>Dentist workload</h2>
+        <p>Bookings, completions and revenue per dentist, with the completion rate.</p>
+        <p><a class="btn btn-small" th:href="@{/reports/workload}">Open</a></p>
+    </div>
+
+    <div class="card">
+        <h2>Patient visit history</h2>
+        <p>Every visit for one patient, on their appointment list.</p>
+        <p><a class="btn btn-small" th:href="@{/appointments}">Open appointments</a></p>
+    </div>
+
+</section>
+</body>
+</html>

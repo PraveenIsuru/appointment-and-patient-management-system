@@ -31,7 +31,7 @@ import java.util.Optional;
 public interface AppointmentRepository extends JpaRepository<Appointment, Long> {
 
     /** Search by appointment number — requirement 3 of the brief. */
-    @EntityGraph(attributePaths = {"patient", "dentist", "treatment"})
+    @EntityGraph(attributePaths = {"patient", "dentist", "treatment", "bill"})
     Optional<Appointment> findByAppointmentNo(String appointmentNo);
 
     boolean existsByAppointmentNo(String appointmentNo);
@@ -56,20 +56,20 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
                         @Param("time") LocalTime time);
 
     /** A patient's own history, newest first. */
-    @EntityGraph(attributePaths = {"patient", "dentist", "treatment"})
+    @EntityGraph(attributePaths = {"patient", "dentist", "treatment", "bill"})
     List<Appointment> findByPatientIdOrderByAppointmentDateDescAppointmentTimeDesc(Long patientId);
 
     /** A dentist's day, for the dentist dashboard. */
-    @EntityGraph(attributePaths = {"patient", "dentist", "treatment"})
+    @EntityGraph(attributePaths = {"patient", "dentist", "treatment", "bill"})
     List<Appointment> findByDentistIdAndAppointmentDateOrderByAppointmentTimeAsc(
             Long dentistId, LocalDate date);
 
     /** The whole clinic's day, for the administrator's dashboard. */
-    @EntityGraph(attributePaths = {"patient", "dentist", "treatment"})
+    @EntityGraph(attributePaths = {"patient", "dentist", "treatment", "bill"})
     List<Appointment> findByAppointmentDateOrderByAppointmentTimeAsc(LocalDate date);
 
     /** Every appointment, with its associations, for the administrator's list. */
-    @EntityGraph(attributePaths = {"patient", "dentist", "treatment"})
+    @EntityGraph(attributePaths = {"patient", "dentist", "treatment", "bill"})
     @Query("SELECT a FROM Appointment a")
     List<Appointment> findAllWithDetails();
 
